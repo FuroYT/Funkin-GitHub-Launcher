@@ -1,0 +1,40 @@
+@font-face {
+    font-family: "5by7";
+    src: url("../assets/5by7.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    background: url("../assets/bg.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    font-family: "5by7", monospace; /* fallback monospace */
+    margin: 0;
+    height: 100vh;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+    
+    color: white;
+}
+
+.clickableText {
+    cursor: pointer;
+    text-shadow: 
+        0 0 5px rgba(0, 150, 255, 0.8),   /* small blur */
+        0 0 10px rgba(0, 150, 255, 0.6),  /* medium blur */
+        0 0 20px rgba(0, 150, 255, 0.4);  /* large glow */
+}
+
+* {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    -webkit-user-drag: none;
+    user-drag: none;
+}

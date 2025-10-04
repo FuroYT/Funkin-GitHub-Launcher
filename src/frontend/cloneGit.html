@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+		body {
+            backdrop-filter: blur(14px);
+		}
+
+        .setupPopup {
+			display: flex;
+			flex-direction: column;
+            width: fit-content;
+            height: fit-content;
+            background-color: rgba(0, 0, 0, 0.4);
+            border-radius: 30px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+			  align-items: stretch; /* ensures children take full width of parent */
+        }
+        
+        .setupHeader {
+            font-size: 50px;
+            padding: 30px;
+			display: block;
+			text-align: center;
+			padding-bottom: 20px;
+        }
+
+		.setupText {
+            font-size: 30px;
+			display: block;
+            padding-left: 30px;
+            padding-right: 30px;
+			margin: 20px;
+			margin-right: 25px;
+			margin-left: 25px;
+        }
+        
+        .codeText {
+            font-size: 24px;
+			display: block;
+            padding-left: 30px;
+            padding-right: 30px;
+			margin: 20px;
+			margin-right: 25px;
+			margin-left: 25px;
+            font-family: monospace;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="settingUp" class="setupPopup">
+        <span class="setupHeader">Source Code Location</span>
+        <span class="setupText">Select a path to clone the game into (It must be an empty directory)</span>
+        <span id="pathSelector" class="codeText"></span>
+        <span id="startCloning" class="setupText" style="padding-bottom: 10px; padding-top: 10px; text-align:center">Clone Source Code</span>
+    </div>
+    <div id="inClone" style="display: none" class="setupPopup">
+        <span class="setupHeader">Cloning...</span>
+        <span id="cmdOutput" class="codeText"></span>
+    </div>
+  </body>
+  <script src="js/global.js"></script>
+  <script src="js/cloneGit.js"></script>
+</html>

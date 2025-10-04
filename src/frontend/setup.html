@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+      body {
+        backdrop-filter: blur(14px);
+      }
+
+      .setupPopup {
+        display: flex;
+        flex-direction: column;
+        width: fit-content;
+        height: fit-content;
+        background-color: rgba(0, 0, 0, 0.4);
+        border-radius: 30px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+			  align-items: stretch; /* ensures children take full width of parent */
+      }
+        
+      .setupHeader {
+        font-size: 50px;
+        padding: 30px;
+        display: block;
+        text-align: center;
+        padding-bottom: 20px;
+      }
+
+		  .setupText {
+        font-size: 30px;
+        display: block;
+        padding-left: 30px;
+        padding-right: 30px;
+        margin: 20px;
+        margin-right: 25px;
+        margin-left: 25px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="setupPopup">
+        <span class="setupHeader">Dependencies Setup</span>
+        <span style="display: none;" id="gitInstall" class="setupText">Install Git</span>
+        <span style="display: none;" id="haxeInstall" class="setupText">Install Haxe</span>
+        <span style="display: none;" id="buildToolsInstall" class="setupText">Install Build Tools</span>
+        <span style="display: none;" id="linuxStuffInstall" class="setupText">Linux Specific Dependencies</span>
+        <span style="display: none;" id="restartAndCheck" class="setupText" style="padding-bottom: 10px; padding-top: 10px; text-align:center">Click To Continue</span>
+    </div>
+  </body>
+  <script src="js/global.js"></script>
+  <script src="js/setup.js"></script>
+</html>

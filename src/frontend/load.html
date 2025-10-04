@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+      body {
+        backdrop-filter: blur(14px);
+      }
+
+      .loadingPopup {
+          width: fit-content;
+          height: fit-content;
+          background-color: rgba(0, 0, 0, 0.4);
+          border-radius: 30px;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          padding-top: 20px;
+          padding-bottom: 20px;
+      }
+      
+      .loadingText {
+          font-size: 50px;
+          padding: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loadingPopup">
+        <span class="loadingText">Loading...</span>
+    </div>
+  </body>
+  <script src="js/global.js"></script>
+  <script src="js/load.js"></script>
+</html>

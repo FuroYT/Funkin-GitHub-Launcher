@@ -1,0 +1,30 @@
+{
+  "name": "funkin-github-launcher",
+  "productName": "Funkin' Github Launcher",
+  "version": "1.0.0",
+  "description": "The official launcher for the Funkin' Github Crew",
+  "license": "ISC",
+  "author": "Furo & Funkin' GitHub Crew",
+  "type": "commonjs",
+  "main": "src/backend/main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.9.0",
+    "@electron-forge/maker-deb": "^7.9.0",
+    "@electron-forge/maker-rpm": "^7.9.0",
+    "@electron-forge/maker-squirrel": "^7.9.0",
+    "@electron-forge/maker-zip": "^7.9.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.9.0",
+    "@electron-forge/plugin-fuses": "^7.9.0",
+    "@electron/fuses": "^1.8.0",
+    "electron": "^38.2.0"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1",
+    "electron-store": "^8.2.0"
+  }
+}
