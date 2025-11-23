@@ -17,6 +17,10 @@ makeButtonClickable(platformBtn, () => {
     platformBtn.textContent = allowedBuildPlatforms[platformIndex];
 });
 
+makeButtonClickable("changeDirectory", () => {
+    window.backendAPI.switchPage("cloneGit");
+});
+
 //-- PULL REQUESTS PART --//
 
 function enableScrollingText(button, speed = 1, pause = 1000, easingFn = t => t) {
