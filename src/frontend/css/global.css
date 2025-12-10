@@ -5,20 +5,43 @@
     font-style: normal;
 }
 
-body {
-    background: url("../assets/bg.png");
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+body.preload {
+    opacity: 0;
+    pointer-events: none;
+}
 
-    font-family: "5by7", monospace; /* fallback monospace */
+body {
+    font-family: "5by7", monospace;
     margin: 0;
     height: 100vh;
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: grayscale;
     overflow: hidden;
-    
     color: white;
+    position: relative; /* needed for overlay */
+    transition: opacity 0.25s ease;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("../assets/backgrounds/default.png") center / cover no-repeat;
+    z-index: -2; /* behind content and color overlay */
+}
+
+body[tinted]::before {
+    filter: grayscale(100%);
+}
+
+body[tinted]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: hsl(var(--bgTintColor), 100%, 50%);
+    mix-blend-mode: multiply;
+    z-index: -1;
+    transition: opacity 0.2s linear;
 }
 
 .clickableText {
@@ -37,4 +60,171 @@ body {
 
     -webkit-user-drag: none;
     user-drag: none;
+}
+
+.setupPopup,
+.loadingPopup {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    height: fit-content;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 30px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    align-items: stretch;
+}
+
+.setupHeader,
+.header,
+.loadingText {
+    font-size: 50px;
+    display: block;
+    text-align: center;
+    padding: 30px;
+    padding-bottom: 20px;
+}
+
+.setupText,
+.normalText {
+    font-size: 30px;
+    display: block;
+    padding-left: 30px;
+    padding-right: 30px;
+    margin: 20px 25px;
+}
+
+.codeText {
+    font-size: 24px;
+    display: block;
+    padding-left: 30px;
+    padding-right: 30px;
+    margin: 20px 25px;
+    font-family: monospace;
+    user-select: text;
+}
+
+.scrollableDiv {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: rgba(0, 0, 0, 0.308);
+}
+
+::-webkit-scrollbar {
+    width: 15px;
+}
+
+::-webkit-scrollbar-track {
+    background: none;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(#F4C1AB, #9AD4E2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(#F4C1AB60, #9AD4E260);
+}
+
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #2e3e42;
+    transition: .4s cubic-bezier(0.32, 1.01, 0.45, 0.94);
+    border-radius: 34px;
+}
+
+.slider:before {
+    border-radius: 50%;
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: #9AD4E2;
+    transition: .4s cubic-bezier(0.32, 1.01, 0.45, 0.94);
+}
+
+input:checked + .slider {
+    background-color: #9AD4E2;
+}
+
+input:checked + .slider:before {
+    background-color: #2e3e42;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+.HueSlider {
+    width: 100%;
+    height: 12px;
+    border-radius: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+
+    background: linear-gradient(
+        to right,
+        hsl(0, 100%, 25%),
+        hsl(60, 100%, 25%),
+        hsl(120, 100%, 25%),
+        hsl(180, 100%, 25%),
+        hsl(240, 100%, 25%),
+        hsl(300, 100%, 25%),
+        hsl(360, 100%, 25%)
+    );
+}
+
+.HueSlider::-webkit-slider-runnable-track {
+    background: transparent;
+}
+.HueSlider::-moz-range-track {
+    background: transparent;
+}
+
+.HueSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #000;
+    background: var(--thumb-color, white);
+    cursor: pointer;
+}
+.HueSlider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #000;
+    background: var(--thumb-color, white);
+    cursor: pointer;
 }

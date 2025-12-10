@@ -17,8 +17,52 @@ makeButtonClickable(platformBtn, () => {
     platformBtn.textContent = allowedBuildPlatforms[platformIndex];
 });
 
+//-- SETTINGS --//
+
 makeButtonClickable("changeDirectory", () => {
     window.backendAPI.switchPage("cloneGit");
+});
+
+var curBgColor = sessionStorage.getItem("FGL_BackgroundColor");
+var doesTintColor = sessionStorage.getItem("FGL_BackgroundTinted") === "true";
+
+var toggleBgTint = document.querySelector(`#tintBg input`);
+var bgColorSlider = document.getElementById("BackgroundColorSlider");
+
+bgColorSlider.addEventListener("input", (ev) => {
+	curBgColor = ev.target.value;
+	updateBgColor(toggleBgTint.checked, curBgColor);
+});
+toggleBgTint.addEventListener("change", (ev) => {
+	updateBgColor(ev.target.checked, curBgColor);
+});
+
+//default values
+bgColorSlider.value = curBgColor ?? 0;
+toggleBgTint.checked = doesTintColor ?? false;
+
+makeButtonClickable("settingsButton", () => {
+	makeButtonUnclickable("pullRequest");
+	makeButtonUnclickable("platform");
+	makeButtonUnclickable("startBuild");
+	makeButtonUnclickable("changeDirectory");
+	makeButtonUnclickable("settingsButton");
+	makeElementVisible("settingsPopup");
+});
+
+makeButtonClickable("closeSettings", () => {
+	makeButtonClickable("pullRequest");
+	makeButtonClickable("platform");
+	makeButtonClickable("startBuild");
+	makeButtonClickable("changeDirectory");
+	makeButtonClickable("settingsButton");
+	makeElementInvisible("settingsPopup");
+
+	sessionStorage.setItem("FGL_BackgroundColor", bgColorSlider.value ?? 0);
+	sessionStorage.setItem("FGL_BackgroundTinted", toggleBgTint.checked ?? false);
+	
+	window.storeAPI.set("FGL_BackgroundColor", bgColorSlider.value ?? 0);
+	window.storeAPI.set("FGL_BackgroundTinted", toggleBgTint.checked ?? false); // update settings for other pages
 });
 
 //-- PULL REQUESTS PART --//
@@ -102,6 +146,8 @@ async function fetchAllPRs(owner, repo, state = "open") {
 		}
 
 		const data = await res.json();
+		for (let pr of data)
+			pr.isPr = true;
 		results = results.concat(data);
 
 		if (data.length < perPage) {
@@ -115,34 +161,64 @@ async function fetchAllPRs(owner, repo, state = "open") {
 
 var hasCheckedPrs = false;
 var selectedPR = null;
+makeButtonClickable(prBtn, () => {
+	if (selectedPR != null)
+	{
+		var url = "";
+		if (selectedPR.isPr)
+			url = `https://github.com/FunkinCrew/Funkin/pull/${selectedPR.number}`;
+		else
+			url = `https://github.com/FunkinCrew/Funkin/tree/${selectedPR.branch}`
+
+		window.backendAPI.openPage(url);
+	}
+}, true);
 makeButtonClickable(prBtn, async () => {
 	makeButtonUnclickable("pullRequest");
 	makeButtonUnclickable("platform");
 	makeButtonUnclickable("startBuild");
+	makeButtonUnclickable("changeDirectory");
+	makeButtonUnclickable("settingsButton");
 
     makeElementVisible("prPopup");
     makeElementVisible("loadingPr")
     if (!hasCheckedPrs) {
-        var prList = document.getElementById("prList")
+        var prListLabel = document.getElementById("prList")
         var allPrs = await fetchAllPRs("FunkinCrew", "Funkin", "open");
-        for (let pullRequest of allPrs)
+        var prList = [
+			{isPr: false, branch: "main", title: "Main Branch"},
+			{isPr: false, branch: "develop", title: "Develop Branch"}
+		];
+		for (let pr of allPrs)
+			prList.push(pr);
+		for (let pullRequest of prList)
         {
             var text = `${pullRequest.title}`
-            if (pullRequest.draft)
-                text = `[DRAFT] ${text}`
-            text = `[#${pullRequest.number}] ${text}`;
+			if (pullRequest.isPr) {
+				if (pullRequest.draft)
+					text = `[DRAFT] ${text}`
+				text = `[#${pullRequest.number}] ${text}`;
+			} else
+				text = `[FunkinCrew:${pullRequest.branch}] ${text}`
 
             var label = document.createElement("span");
             label.classList.add("normalText");
             label.textContent = text;
-            prList.appendChild(label);
+            prListLabel.appendChild(label);
             makeButtonClickable(label, () => {
                 selectedPR = pullRequest;
-                prBtn.updateText(`[#${selectedPR.number}] ${pullRequest.draft ? "[DRAFT] " : ""}${selectedPR.head.user.login}/${selectedPR.head.ref}`)
+				var btnText = "";
+				if (!selectedPR.isPr)
+					btnText = `${selectedPR.title} | FunkinCrew:${selectedPR.branch}`;
+				else
+					btnText = `[#${selectedPR.number}] ${pullRequest.draft ? "[DRAFT] " : ""}${selectedPR.head.user.login}:${selectedPR.head.ref}`
+				prBtn.updateText(btnText)
                 makeElementInvisible("prPopup");
 				makeButtonClickable("pullRequest");
 				makeButtonClickable("platform");
 				makeButtonClickable("startBuild");
+				makeButtonClickable("changeDirectory")
+				makeButtonClickable("settingsButton");
             });
         }
         hasCheckedPrs = true; //OMG TRUE
@@ -155,6 +231,8 @@ makeButtonClickable("prPopupClose", () => {
 	makeButtonClickable("pullRequest");
 	makeButtonClickable("platform");
 	makeButtonClickable("startBuild");
+	makeButtonClickable("changeDirectory");
+	makeButtonClickable("settingsButton");
 });
 enableScrollingText(prBtn, 0.5, 3000, t => -Math.cos(Math.PI * t)/2 + 0.5); //sine in out easing cuz fuck yeah
 
@@ -165,12 +243,16 @@ makeButtonClickable(startBuild, () => {
 	makeButtonUnclickable("pullRequest");
 	makeButtonUnclickable("platform");
 	makeButtonUnclickable("startBuild");
+	makeButtonUnclickable("changeDirectory");
+	makeButtonUnclickable("settingsButton");
 })
 makeButtonClickable("startBuildClose", () => {
     makeElementInvisible("buildPopup");
 	makeButtonClickable("pullRequest");
 	makeButtonClickable("platform");
 	makeButtonClickable("startBuild");
+	makeButtonClickable("changeDirectory");
+	makeButtonClickable("settingsButton");
 });
 makeButtonClickable("startBuildConfirm", async () => {
 	if (selectedPR == null)
@@ -212,25 +294,42 @@ function getBuildCommands() {
     var buildFlags = getBuildFlags();
     var commands = [];
 
-    const remoteName = selectedPR.head.repo.owner.login;
-    const repoUrl = selectedPR.head.repo.clone_url;
-    const branchRef = selectedPR.head.ref;
+	const hasRemote = selectedPR.isPr;
 
-	commands.push(`git remote add ${remoteName} ${repoUrl}`)
-    commands.push(`git remote set-url ${remoteName} ${repoUrl}`);
-    commands.push(`git fetch ${remoteName} ${branchRef}`);
-    commands.push(`git switch -C ${branchRef}-${remoteName} ${remoteName}/${branchRef}`);
+	if (hasRemote) {
+		const remoteName = selectedPR.head.repo.owner.login;
+		const repoUrl = selectedPR.head.repo.clone_url;
+		const branchRef = selectedPR.head.ref;
+
+		commands.push(`git remote add ${remoteName} ${repoUrl}`)
+		commands.push(`git remote set-url ${remoteName} ${repoUrl}`);
+		commands.push(`git fetch ${remoteName} ${branchRef}`);
+		commands.push(`git switch -C ${branchRef}-${remoteName} ${remoteName}/${branchRef}`);
+	} else {
+		const branchRef = selectedPR.branch;
+
+		commands.push(`git fetch --all`);
+		commands.push(`git switch -C ${branchRef} origin/${branchRef}`);
+	}
+	// FGL is not a program to edit the game code its to compile it and test pull requests only
+	commands.push(`git reset --hard HEAD`); // Incase new commits come in for the cur branch it resets the entire head to the new commits
 	commands.push(`git submodule update --recursive`);
+	commands.push(`hmm reinstall`) // Fixes missing libraries or missmatched library versions
 	var cmdPrefix = window.backendAPI.platform === "win32" ? `start "" cmd /c "` : `bash -c "`;
 	var cmdSuffix = `"`;
 	//you cant have newgrounds on these cuz of the env
-    commands.push(`${cmdPrefix}lime test ${platform.toLowerCase()} -release -DNO_FEATURE_NEWGROUNDS ${buildFlags.join(" ")}${cmdSuffix}`);
+    commands.push(`${cmdPrefix}lime test ${platform.toLowerCase()} -release ${buildFlags.join(" ")}${cmdSuffix}`);
+
+	console.log(commands);
 
     return commands;
 }
 
 function getBuildFlags(){
-	var flagsArray = [];
+	var flagsArray = [
+		// A list or forced flags for the compilation due variables being internal only
+		"-DNO_FEATURE_NEWGROUND"
+	];
 	var allFlags = [
 		["debugBuild", "GITHUB_BUILD"],
 		["featureVideo", "FEATURE_VIDEO_PLAYBACK"],

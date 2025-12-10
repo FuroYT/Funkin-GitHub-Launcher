@@ -54,7 +54,7 @@
 				background-color: rgba(0, 0, 0, 0.308);
 			}
 
-			.buildPopup, .prPopup {
+			.settingsPopup, .buildPopup, .prPopup {
 				backdrop-filter: blur(14px);
 				display: flex;
 				flex-direction: column;
@@ -68,14 +68,6 @@
 				transform: translate(-50%, -50%);
 				align-items: stretch; /* ensures children take full width of parent */
 			}
-			
-			.header {
-				font-size: 50px;
-				padding: 30px;
-				display: block;
-				text-align: center;
-				padding-bottom: 20px;
-			}
 
 			.normalText {
 				font-family: monospace;
@@ -86,26 +78,6 @@
 				margin: 15px;
 				margin-right: 25px;
 				margin-left: 25px;
-			}
-
-			/* width */
-			::-webkit-scrollbar {
-				width: 15px;
-			}
-
-			/* Track */
-			::-webkit-scrollbar-track {
-				background: none;
-			}
-
-			/* Handle */
-			::-webkit-scrollbar-thumb {
-				background: linear-gradient(#F4C1AB, #9AD4E2);
-			}
-
-			/* Handle on hover */
-			::-webkit-scrollbar-thumb:hover {
-				background: linear-gradient(#F4C1AB60, #9AD4E260);
 			}
 
 			.scrolling-btn {
@@ -121,58 +93,12 @@
 				left: 0;
 			}
 
-			/* The switch - the box around the slider */
-			.switch {
-				position: relative;
-				display: inline-block;
-				width: 60px;
-				height: 34px;
+			.optionText {
+				display: flex;
 			}
 
-			/* Hide default HTML checkbox */
-			.switch input {
-				opacity: 0;
-				width: 0;
-				height: 0;
-			}
-
-			/* The slider */
-			.slider {
-				position: absolute;
-				cursor: pointer;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				background-color: #2e3e42;
-  				transition: .4s cubic-bezier(0.32, 1.01, 0.45, 0.94);
-				border-radius: 34px;
-			}
-
-			.slider:before {
-				border-radius: 50%;
-				position: absolute;
-				content: "";
-				height: 26px;
-				width: 26px;
-				left: 4px;
-				bottom: 4px;
-				background-color: #9AD4E2;
-				transition: .4s cubic-bezier(0.32, 1.01, 0.45, 0.94);
-			}
-
-			input:checked + .slider {
-				background-color: #9AD4E2;
-			}
-
-			input:checked + .slider:before {
-				background-color: #2e3e42;
-			}
-
-			input:checked + .slider:before {
-				-webkit-transform: translateX(26px);
-				-ms-transform: translateX(26px);
-				transform: translateX(26px);
+			.textStep {
+				margin-left: 20px;
 			}
 
 			.freakyButton {
@@ -193,6 +119,9 @@
 		<div id="changeDirectory" class="freakyButton">
 			<span class="header" style="font-size: 30px !important">Change Source Code Directory</span>
 		</div>
+		<div id="settingsButton" style="left: calc(100vw - 81px - 10px)" class="freakyButton">
+			<img src="assets/settings.svg" style="padding: 10px" height="61">
+		</div>
 		<div class="capsule">
 			<img src="assets/capsule.png" />
 			<span class="capsuleText" id="platform">Platform</span>
@@ -207,6 +136,29 @@
 				<span id="loadingPr" class="normalText">Loading Pull Requests...</span>
 			</div>
 			<span id="prPopupClose" style="text-align: center; font-family: unset !important;" class="normalText">Cancel</span>
+		</div>
+		<div class="settingsPopup" style="display: none;">
+			<span class="header">Settings</span>
+			<div id="settingList" class="scrollableDiv">
+				<span id="tintBg" class="normalText optionText">
+					<label class="switch">
+						<input type="checkbox">
+						<span class="slider"></span>
+					</label>
+					<div class="textStep"></div>
+					Tint Background Color?
+				</span>
+				<span id="tintColor" class="normalText optionText">
+					<div style="max-width: 150px;">
+						<input class="HueSlider" id='BackgroundColorSlider' type="range" min="0" max="360" defaultValue="0">
+					</div>
+					<div class="textStep"></div>
+					Background Color
+				</span>
+			</div>
+			<div style="display: flex;flex-direction: row;align-content: center;align-items: center;justify-content: center;">
+				<span id="closeSettings" style="text-align: center; font-family: unset !important;" class="normalText">Close</span>
+			</div>
 		</div>
 		<div class="buildPopup" style="display: none;">
 			<span class="header">Build Options</span>

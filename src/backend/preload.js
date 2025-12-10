@@ -1,5 +1,7 @@
-const { contextBridge, ipcRenderer } = require("electron");
+const { contextBridge, ipcRenderer, app } = require("electron");
 
+const isPackagedArg = process.argv.find(arg => arg.startsWith("--isPackaged="));
+const isPackaged = isPackagedArg?.split("=")[1] === "true";
 contextBridge.exposeInMainWorld("backendAPI", {
 	checkGit: () => ipcRenderer.invoke("check-git"),
 	checkHaxe: () => ipcRenderer.invoke("check-haxe"),
@@ -8,6 +10,7 @@ contextBridge.exposeInMainWorld("backendAPI", {
 	switchPage: (page) => ipcRenderer.invoke("open-page", page),
 	pathExists: (path) => ipcRenderer.invoke('check-path', path),
 	showOpenDialog: (data) => ipcRenderer.invoke("show-open-dialog", data),
+	updateAccentColor: (enable, hue) => ipcRenderer.invoke("update-window-accent", enable, hue),
 
 	runCommand: (commandId, command, args, options) => {
 		return {
@@ -23,6 +26,7 @@ contextBridge.exposeInMainWorld("backendAPI", {
 	},
 
 	platform: process.platform,
+	isPackaged: isPackaged,
 });
 
 contextBridge.exposeInMainWorld("storeAPI", {

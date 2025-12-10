@@ -15,6 +15,18 @@ const loadPage = (page) => {
 	if (mainWindow != null)
 		mainWindow.loadFile(`src/frontend/${page}.html`)
 }
+
+function getWindowAccentColor(doesTintColor, curBgColor)
+{
+	if (curBgColor === undefined)
+		curBgColor = store.get("FGL_BackgroundColor") ?? 0;
+    if (doesTintColor === undefined)
+		doesTintColor = store.get("FGL_BackgroundTinted") ?? false;
+	if (doesTintColor)
+		return hueToHex(curBgColor);
+	return "#FFFFFF";
+}
+
 const createWindow = () => {
 	if (mainWindow != null) {
 		mainWindow.close();
@@ -26,17 +38,18 @@ const createWindow = () => {
 		minWidth: 1238,
 		minHeight: 187, 
 		title: "Funkin' GitHub Launcher",
-		accentColor: "#393d3e",
+		accentColor: getWindowAccentColor(),
 		webPreferences: {
-			preload: path.join(__dirname, 'preload.js')
+			preload: path.join(__dirname, 'preload.js'),
+			additionalArguments: [ `--isPackaged=${app.isPackaged}` ]
 		},
 	});
 	mainWindow.removeMenu();
-	mainWindow.webContents.openDevTools({mode: 'detach'});
+	if (!app.isPackaged)
+		mainWindow.webContents.openDevTools({mode: 'detach'});
 
 	loadPage("load");
 }
-
 
 app.whenReady().then(() => {
 	createWindow()
@@ -56,42 +69,42 @@ app.on('window-all-closed', () => {
 
 ipcMain.handle('run-command', (event, commandId, command, args = [], options = {}) => {
 	const defaultOptions = {
-        cwd: options.cwd || process.cwd(),
-        shell: true
-    };
-    return new Promise((resolve, reject) => {
+		cwd: options.cwd || process.cwd(),
+		shell: true
+	};
+	return new Promise((resolve, reject) => {
 		const spawnOptions = { ...defaultOptions, ...options };
-        const cmdProcess = spawn(command, args, spawnOptions);
+		const cmdProcess = spawn(command, args, spawnOptions);
 
-        cmdProcess.stdout.on('data', (data) => {
+		cmdProcess.stdout.on('data', (data) => {
 			console.log(`[${commandId}] ${data.toString()}`);
-            event.sender.send('command-output', { commandId, data: data.toString() });
-        });
+			event.sender.send('command-output', { commandId, data: data.toString() });
+		});
 
-        cmdProcess.stderr.on('data', (data) => {
+		cmdProcess.stderr.on('data', (data) => {
 			console.log(`[${commandId}] ${data.toString()}`);
-            event.sender.send('command-output', { commandId, data: data.toString() });
-        });
+			event.sender.send('command-output', { commandId, data: data.toString() });
+		});
 
-        cmdProcess.on('close', (code) => {
-            if (code === 0) resolve({ commandId, success: true });
-            else reject({ commandId, success: false, code });
-        });
-    });
+		cmdProcess.on('close', (code) => {
+			if (code === 0) resolve({ commandId, success: true });
+			else reject({ commandId, success: false, code });
+		});
+	});
 });
 
 ipcMain.handle("show-open-dialog", async (event, data) => {
 	const result = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), data);
-    
-    if (result.canceled) {
-        return null; // user canceled
-    } else {
-        return result.filePaths; // first selected folder
-    }
+	
+	if (result.canceled) {
+		return null; // user canceled
+	} else {
+		return result.filePaths; // first selected folder
+	}
 })
 
 ipcMain.handle('check-path', (event, path) => {
-    return existsSync(path); // returns true or false
+	return existsSync(path); // returns true or false
 });
 
 ipcMain.handle("open-page", (event, page) => {
@@ -110,7 +123,7 @@ ipcMain.handle("open-subpage", (event, location, local) => {
 		modal: true,
 		fullscreenable: false,
 		title: "Funkin' GitHub Launcher",
-		accentColor: "#393d3e",
+		accentColor: getWindowAccentColor(),
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.js'),
 			contextIsolation: true,
@@ -188,17 +201,47 @@ ipcMain.handle("check-buildTools", async () => {
 	});
 });
 
+ipcMain.handle("update-window-accent", (event, enable, hue) => {
+	if (mainWindow != null)
+		mainWindow.setAccentColor(getWindowAccentColor(enable, hue));
+})
+
 // Handle requests from renderer
 ipcMain.handle('store-get', (event, key) => {
-  return store.get(key);
+	return store.get(key);
 });
 
 ipcMain.handle('store-set', (event, key, value) => {
-  store.set(key, value);
-  return true;
+	store.set(key, value);
+	return true;
 });
 
 ipcMain.handle('store-delete', (event, key) => {
-  store.delete(key);
-  return true;
+	store.delete(key);
+	return true;
 });
+
+function hueToHex(hue) {
+    const c = 1; // Chroma = saturation * value
+    const x = 1 - Math.abs((hue / 60) % 2 - 1);
+    const m = 0;
+
+    let r1 = 0, g1 = 0, b1 = 0;
+
+	hue = hue % 360;
+    if (hue >= 0 && hue < 60) { r1 = c; g1 = x; b1 = 0; }
+    else if (hue >= 60 && hue < 120) { r1 = x; g1 = c; b1 = 0; }
+    else if (hue >= 120 && hue < 180) { r1 = 0; g1 = c; b1 = x; }
+    else if (hue >= 180 && hue < 240) { r1 = 0; g1 = x; b1 = c; }
+    else if (hue >= 240 && hue < 300) { r1 = x; g1 = 0; b1 = c; }
+    else if (hue >= 300 && hue < 360) { r1 = c; g1 = 0; b1 = x; }
+
+    // Convert to 0-255
+    const r = Math.round((r1 + m) * 255);
+    const g = Math.round((g1 + m) * 255);
+    const b = Math.round((b1 + m) * 255);
+
+    // Convert to hex
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b)
+        .toString(16).slice(1);
+}
