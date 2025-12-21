@@ -285,6 +285,8 @@ makeButtonClickable("startBuildConfirm", async () => {
 		makeButtonClickable("pullRequest");
 		makeButtonClickable("platform");
 		makeButtonClickable("startBuild");
+		makeButtonClickable("changeDirectory");
+		makeButtonClickable("settingsButton");
 		startBuild.textContent = "Click to Build";
 	}
 })
@@ -314,7 +316,6 @@ function getBuildCommands() {
 	// FGL is not a program to edit the game code its to compile it and test pull requests only
 	commands.push(`git reset --hard HEAD`); // Incase new commits come in for the cur branch it resets the entire head to the new commits
 	commands.push(`git submodule update --recursive`);
-	commands.push(`hmm reinstall`) // Fixes missing libraries or missmatched library versions
 	var cmdPrefix = window.backendAPI.platform === "win32" ? `start "" cmd /c "` : `bash -c "`;
 	var cmdSuffix = `"`;
 	//you cant have newgrounds on these cuz of the env
