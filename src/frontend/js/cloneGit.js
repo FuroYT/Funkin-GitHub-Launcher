@@ -32,8 +32,8 @@ makeButtonClickable(cloneButton, async () => {
     const steps = [
         ["funkin_cloneRepo", 'git', ['clone', 'https://github.com/FunkinCrew/funkin.git', "."], curPath],
         ["funkin_getSubmodules", 'git', ['submodule', 'update', '--init', '--recursive'], curPath],
-        ["haxelib_changeHaxelib", 'haxelib', ['--global', 'git', 'haxelib', 'https://github.com/FunkinCrew/haxelib.git'], curPath],
-        ["haxelib_changeHmm", 'haxelib', ['--global', 'git', 'hmm', 'https://github.com/FunkinCrew/hmm.git'], curPath],
+        ["haxelib_changeHaxelib", 'haxelib', ['--global', 'git', 'haxelib', 'https://github.com/FunkinCrew/haxelib.git', '-a'], curPath],
+        ["haxelib_changeHmm", 'haxelib', ['--global', 'git', 'hmm', 'https://github.com/FunkinCrew/hmm.git', '-a'], curPath],
         ["hmm_setup", 'haxelib', ['--global', 'run', 'hmm', 'setup', '-y'], curPath],
         ["hmm_install", 'hmm', ['install'], curPath],
         ["lime_setup", 'haxelib', ['run', 'lime', 'setup'], curPath],
